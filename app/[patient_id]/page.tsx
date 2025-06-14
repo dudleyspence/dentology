@@ -13,6 +13,8 @@ import usePatients from "@/hooks/usePatients";
 import { convertDateToReadable } from "@/utils/dateConversions";
 import useAppointments from "@/hooks/useAppointments";
 import { useParams } from "next/navigation";
+import Link from "next/link";
+import { FaArrowLeft } from "react-icons/fa";
 
 export default function page() {
   // gets the dynamic params - client side so using useParams
@@ -28,10 +30,28 @@ export default function page() {
   console.log(patient);
 
   return (
-    <div className="p-10">
-      <h1 className="text-center text-2xl">Dentology Patient Records</h1>
+    <div className="relative max-w-7xl mx-auto mt-10">
+      <Link
+        href="/"
+        className="flex flex-row gap-2 items-center justify-center absolute top-0 left-5 hover:underline"
+      >
+        <FaArrowLeft />
 
-      <div className="max-w-7xl mx-auto mt-10">
+        <p>back to patients</p>
+      </Link>
+      <h1 className="text-center text-2xl font-bold my-10">
+        Patient Dental Record
+      </h1>
+      <p>
+        <strong>Name: </strong>
+        {patient?.firstName} {patient?.lastName}
+      </p>
+      <p>
+        <strong>Date Of Birth: </strong>
+        {convertDateToReadable(patient?.dateOfBirth)}
+      </p>
+
+      <div className=" mt-10">
         <Table>
           <TableCaption>
             A list of {patient?.firstName} {patient?.lastName}'s appointments
