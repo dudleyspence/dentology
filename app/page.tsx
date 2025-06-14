@@ -14,13 +14,14 @@ import { convertDateToReadable } from "@/utils/dateConversions";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function page() {
   const [sortBy, setSortBy] = useState<sort_by_type>("lastName");
   const [order, setOrder] = useState<list_order>("asc");
   const { patients } = usePatients(sortBy, order);
 
-  console.log(sortBy);
+  const router = useRouter();
 
   return (
     <div className="p-10">
@@ -113,20 +114,18 @@ export default function page() {
           </TableHeader>
           <TableBody>
             {patients.map((patient) => (
-              <Link
-                href={`/${patient.id}`}
-                className="contents"
+              <TableRow
+                className="w-full"
                 key={patient.id}
+                onClick={() => router.push(`/${patient.id}`)}
               >
-                <TableRow className="w-full">
-                  <TableCell className="font-medium">{patient.id}</TableCell>
-                  <TableCell>{patient.firstName}</TableCell>
-                  <TableCell>{patient.lastName}</TableCell>
-                  <TableCell className="text-right">
-                    {convertDateToReadable(patient.dateOfBirth)}
-                  </TableCell>
-                </TableRow>
-              </Link>
+                <TableCell className="font-medium">{patient.id}</TableCell>
+                <TableCell>{patient.firstName}</TableCell>
+                <TableCell>{patient.lastName}</TableCell>
+                <TableCell className="text-right">
+                  {convertDateToReadable(patient.dateOfBirth)}
+                </TableCell>
+              </TableRow>
             ))}
           </TableBody>
         </Table>

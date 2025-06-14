@@ -66,7 +66,7 @@ export default function page() {
           </TableHeader>
           <TableBody>
             {appointments.map((appointment) => (
-              <TableRow>
+              <TableRow key={appointment.id}>
                 <TableCell className="font-medium">{appointment.id}</TableCell>
                 <TableCell>{appointment.type}</TableCell>
                 <TableCell>{appointment.status}</TableCell>
