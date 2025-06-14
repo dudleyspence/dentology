@@ -33,10 +33,13 @@ export default function page() {
           </TableHeader>
           <TableBody>
             {patients.map((patient) => (
-              <Link href={`/${patient.id}`}>
-                <TableRow>
+              <Link
+                href={`/${patient.id}`}
+                className="contents"
+                key={patient.id}
+              >
+                <TableRow className="w-full">
                   <TableCell className="font-medium">{patient.id}</TableCell>
-
                   <TableCell>{patient.firstName}</TableCell>
                   <TableCell>{patient.lastName}</TableCell>
                   <TableCell className="text-right">

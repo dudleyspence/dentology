@@ -18,7 +18,7 @@ export default function usePatients(
 
   const patientData: patient[] = [
     {
-      id: "app_1",
+      id: "patient_1",
       firstName: "Joe",
       lastName: "Bloggs",
       dateOfBirth: new Date("1998-06-08T12:24:37.512Z"),
@@ -44,5 +44,10 @@ export default function usePatients(
     setPatients(sortedPatients);
   }, [sort_by, order]);
 
-  return { patients };
+  function fetchSinglePatient(patient_id: string) {
+    const patient = patientData.find((patient) => patient.id === patient_id);
+    return patient;
+  }
+
+  return { patients, fetchSinglePatient };
 }
