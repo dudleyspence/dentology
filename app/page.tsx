@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -9,26 +9,106 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import usePatients from "@/hooks/usePatients";
+import usePatients, { list_order, sort_by_type } from "@/hooks/usePatients";
 import { convertDateToReadable } from "@/utils/dateConversions";
+import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
+
 import Link from "next/link";
 
 export default function page() {
-  const { patients } = usePatients();
+  const [sortBy, setSortBy] = useState<sort_by_type>("lastName");
+  const [order, setOrder] = useState<list_order>("asc");
+  const { patients } = usePatients(sortBy, order);
+
+  console.log(sortBy);
 
   return (
     <div className="p-10">
-      <h1 className="text-center text-2xl">Dentology Patient Records</h1>
+      <h1 className="text-center text-2xl">
+        Dentology Patient Records <span className="text-2xl">🦷 </span>
+      </h1>
 
-      <div className="max-w-7xl mx-auto mt-10">
+      <div className="max-w-6xl mx-auto mt-10">
         <Table>
           <TableCaption>A list of dental patients.</TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px]">ID</TableHead>
-              <TableHead>First Name</TableHead>
-              <TableHead>Last Name</TableHead>
-              <TableHead className="text-right">Date Of Birth</TableHead>
+              <TableHead className="w-[150px]">ID</TableHead>
+              <TableHead
+                className="hover:underline"
+                onClick={() => {
+                  if (sortBy === "firstName") {
+                    setOrder(order === "asc" ? "desc" : "asc");
+                  } else {
+                    setSortBy("firstName");
+                  }
+                }}
+              >
+                <div className="flex flex-row gap-2 items-center">
+                  <p>First Name</p>
+                  {sortBy === "firstName" ? (
+                    order === "desc" ? (
+                      <MdKeyboardArrowUp />
+                    ) : (
+                      <MdKeyboardArrowDown />
+                    )
+                  ) : (
+                    <span className="invisible">
+                      <MdKeyboardArrowDown />
+                    </span>
+                  )}
+                </div>
+              </TableHead>
+              <TableHead
+                className="hover:underline"
+                onClick={() => {
+                  if (sortBy === "lastName") {
+                    setOrder(order === "asc" ? "desc" : "asc");
+                  } else {
+                    setSortBy("lastName");
+                  }
+                }}
+              >
+                <div className="flex flex-row gap-2 items-center">
+                  <p>Last Name</p>
+                  {sortBy === "lastName" ? (
+                    order === "desc" ? (
+                      <MdKeyboardArrowUp />
+                    ) : (
+                      <MdKeyboardArrowDown />
+                    )
+                  ) : (
+                    <span className="invisible">
+                      <MdKeyboardArrowDown />
+                    </span>
+                  )}
+                </div>
+              </TableHead>
+              <TableHead
+                className="hover:underline text-right"
+                onClick={() => {
+                  if (sortBy === "dateOfBirth") {
+                    setOrder(order === "asc" ? "desc" : "asc");
+                  } else {
+                    setSortBy("dateOfBirth");
+                  }
+                }}
+              >
+                <div className="flex flex-row gap-2 items-center justify-end">
+                  <p>Date Of Birth</p>
+                  {sortBy === "dateOfBirth" ? (
+                    order === "desc" ? (
+                      <MdKeyboardArrowUp />
+                    ) : (
+                      <MdKeyboardArrowDown />
+                    )
+                  ) : (
+                    <span className="invisible">
+                      <MdKeyboardArrowDown />
+                    </span>
+                  )}
+                </div>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

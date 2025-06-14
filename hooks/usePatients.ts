@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
-type sort_by_type = "firstName" | "lastName" | "dateOfBirth";
-type list_order = "asc" | "desc";
+export type sort_by_type = "firstName" | "lastName" | "dateOfBirth";
+export type list_order = "asc" | "desc";
 
 interface patient {
   id: string;
@@ -12,7 +12,7 @@ interface patient {
 
 export default function usePatients(
   sort_by: sort_by_type = "lastName",
-  order: list_order = "desc"
+  order: list_order = "asc"
 ) {
   const [patients, setPatients] = useState<patient[]>([]);
 
@@ -83,12 +83,16 @@ export default function usePatients(
     const sortedPatients = [...patientData];
 
     if (sort_by === "dateOfBirth") {
-      // sort by date of birth
+      // sort by date of birth (converted into ms since same date in the past)
+      sortedPatients.sort(
+        (a, b) => a.dateOfBirth.getTime() - b.dateOfBirth.getTime()
+      );
     } else if (sort_by === "firstName") {
       // sort by first name
+      sortedPatients.sort((a, b) => a.firstName.localeCompare(b.firstName));
     } else {
       // defailt to sort by last name (alphabetically)
-      sortedPatients.sort((a, b) => a.firstName.localeCompare(b.firstName));
+      sortedPatients.sort((a, b) => a.lastName.localeCompare(b.lastName));
     }
 
     if (order === "desc") {
