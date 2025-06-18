@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState, useTransition } from "react";
 
 export type sort_by_type = "firstName" | "lastName" | "dateOfBirth";
 export type list_order = "asc" | "desc";
 
-interface patient {
+export interface patient {
   id: string;
   firstName: string;
   lastName: string;
@@ -12,75 +12,37 @@ interface patient {
 
 export default function usePatients(
   sort_by: sort_by_type = "lastName",
-  order: list_order = "asc"
+  order: list_order = "asc",
+  searchTerm: string = ""
 ) {
-  const [patients, setPatients] = useState<patient[]>([]);
-
-  const patientData: patient[] = [
-    {
-      id: "patient_1",
-      firstName: "Joe",
-      lastName: "Bloggs",
-      dateOfBirth: new Date("1998-06-08T12:24:37.512Z"),
-    },
-    {
-      id: "patient_2",
-      firstName: "Alice",
-      lastName: "Smith",
-      dateOfBirth: new Date("1985-02-14T09:15:00.000Z"),
-    },
-    {
-      id: "patient_3",
-      firstName: "Michael",
-      lastName: "Johnson",
-      dateOfBirth: new Date("1970-11-30T18:45:00.000Z"),
-    },
-    {
-      id: "patient_4",
-      firstName: "Emily",
-      lastName: "Brown",
-      dateOfBirth: new Date("2002-07-21T14:10:00.000Z"),
-    },
-    {
-      id: "patient_5",
-      firstName: "Daniel",
-      lastName: "Taylor",
-      dateOfBirth: new Date("1991-04-03T11:30:00.000Z"),
-    },
-    {
-      id: "patient_6",
-      firstName: "Sophie",
-      lastName: "Wilson",
-      dateOfBirth: new Date("1996-10-12T08:25:00.000Z"),
-    },
-    {
-      id: "patient_7",
-      firstName: "James",
-      lastName: "Davies",
-      dateOfBirth: new Date("1980-01-19T19:55:00.000Z"),
-    },
-    {
-      id: "patient_8",
-      firstName: "Olivia",
-      lastName: "Evans",
-      dateOfBirth: new Date("2000-05-05T13:40:00.000Z"),
-    },
-    {
-      id: "patient_9",
-      firstName: "William",
-      lastName: "Thomas",
-      dateOfBirth: new Date("1993-08-25T07:20:00.000Z"),
-    },
-    {
-      id: "patient_10",
-      firstName: "Chloe",
-      lastName: "Roberts",
-      dateOfBirth: new Date("1988-03-10T22:15:00.000Z"),
-    },
-  ];
+  const [allPatients, setAllPatients] = useState<patient[]>([]);
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    const sortedPatients = [...patientData];
+    async function fetchAllPatients() {
+      const allPatientsData = await fetch("/api/patients");
+      const data = await allPatientsData.json();
+      console.log(data);
+
+      setAllPatients(data.patientData);
+    }
+    startTransition(async () => {
+      await fetchAllPatients();
+    });
+  }, []);
+
+  console.log(allPatients);
+
+  const patients = useMemo(() => {
+    let sortedPatients = [...allPatients];
+
+    if (searchTerm) {
+      sortedPatients = sortedPatients.filter((patient) => {
+        const fullname = patient.firstName + " " + patient.lastName;
+        return fullname.includes(searchTerm);
+      });
+    }
+    console.log(sortedPatients);
 
     if (sort_by === "dateOfBirth") {
       // sort by date of birth (converted into ms since same date in the past)
@@ -99,13 +61,13 @@ export default function usePatients(
       sortedPatients.reverse();
     }
 
-    setPatients(sortedPatients);
-  }, [sort_by, order]);
+    return sortedPatients;
+  }, [sort_by, order, searchTerm, allPatients]);
 
   function fetchSinglePatient(patient_id: string) {
-    const patient = patientData.find((patient) => patient.id === patient_id);
+    const patient = allPatients.find((patient) => patient.id === patient_id);
     return patient;
   }
 
-  return { patients, fetchSinglePatient };
+  return { patients, fetchSinglePatient, isPending };
 }

@@ -15,13 +15,17 @@ import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
 
 export default function page() {
   const [sortBy, setSortBy] = useState<sort_by_type>("lastName");
   const [order, setOrder] = useState<list_order>("asc");
-  const { patients } = usePatients(sortBy, order);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const { patients, isPending } = usePatients(sortBy, order, searchTerm);
 
   const router = useRouter();
+
+  console.log(isPending);
 
   return (
     <div className="p-10">
@@ -30,8 +34,18 @@ export default function page() {
       </h1>
 
       <div className="max-w-6xl mx-auto mt-10">
+        <div>
+          <Input
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+            }}
+          />
+        </div>
+        {isPending && <p>Loading</p>}
         <Table>
           <TableCaption>A list of dental patients.</TableCaption>
+
           <TableHeader>
             <TableRow>
               <TableHead className="w-[150px]">ID</TableHead>
